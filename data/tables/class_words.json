@@ -1,0 +1,23 @@
+{
+ "AGRICULTURE": "Farming: cropping",
+ "LIVESTOCK": "Farming: livestock",
+ "HORTICULTURE": "Farming: horticulture",
+ "FORESTRY": "Forestry",
+ "VACANT": "Vacant land",
+ "RURAL_RESID": "Rural living",
+ "RESIDENTIAL": "Residential",
+ "VACANT_RESID": "Vacant urban land (lots)",
+ "NONPRIVATE_RESID": "Non-private residential",
+ "COMMERCIAL": "Commercial",
+ "RET_COMMERCIAL": "Retail",
+ "UTIL_INDUSTRY": "Utilities and industry",
+ "FOOD_INDUSTRY": "Food industry",
+ "MINE_QUARRY": "Mining and quarrying",
+ "EDUCATION": "Education",
+ "PUB_INSTITUTION": "Public institution",
+ "RECREATION": "Recreation and reserves",
+ "RESERVE": "Recreation and reserves",
+ "GOLF": "Recreation and reserves",
+ "(no parcel)": "No parcel",
+ "(none)": "No parcel"
+}

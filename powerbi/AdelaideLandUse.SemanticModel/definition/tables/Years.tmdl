@@ -1,0 +1,68 @@
+table Years
+	lineageTag: e4a00407-f4e1-4849-a66f-076123f38494
+
+	measure 'Greenfield each year' = SUM ( Years[greenfield] )
+		formatString: #,0
+		lineageTag: 5971beed-33f1-eb7f-9aa6-bbc15784109f
+
+	measure 'Infill each year' = SUM ( Years[infill] )
+		formatString: #,0
+		lineageTag: 76db3761-accb-cdf3-6aa9-4644614c270a
+
+	column fy
+		dataType: string
+		lineageTag: e609eee8-ed93-3614-c38e-c75bea7cbb62
+		summarizeBy: none
+		sourceColumn: fy
+
+		annotation SummarizationSetBy = Automatic
+
+	column greenfield
+		dataType: double
+		formatString: #,0
+		lineageTag: f05bcd73-f786-4eba-0317-9dfff94307f5
+		summarizeBy: none
+		sourceColumn: greenfield
+
+		annotation SummarizationSetBy = Automatic
+
+	column infill
+		dataType: double
+		formatString: #,0
+		lineageTag: 84f79876-adb0-ac8c-4843-8ac28fe8043b
+		summarizeBy: none
+		sourceColumn: infill
+
+		annotation SummarizationSetBy = Automatic
+
+	column vacant_urban
+		dataType: double
+		formatString: #,0
+		lineageTag: b66527eb-9058-7b3a-d1ad-35134d5b2315
+		summarizeBy: none
+		sourceColumn: vacant_urban
+
+		annotation SummarizationSetBy = Automatic
+
+	column brownfield
+		dataType: double
+		formatString: #,0
+		lineageTag: 31a0c5d1-e653-7daf-760d-ac75bd1810de
+		summarizeBy: none
+		sourceColumn: brownfield
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Years = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(GetFile("tables/by_year.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Promoted, {"fy", "Greenfield", "Infill", "Vacant residential land", "Brownfield and other"}),
+				    Typed = Table.TransformColumnTypes(Kept, {{"fy", type text}, {"Greenfield", type number}, {"Infill", type number}, {"Vacant residential land", type number}, {"Brownfield and other", type number}}, "en-US")
+				    Renamed = Table.RenameColumns(Typed, {{"Greenfield", "greenfield"}, {"Infill", "infill"}, {"Vacant residential land", "vacant_urban"}, {"Brownfield and other", "brownfield"}, {"Not in the 2018 layer", "no_parcel"}})
+				in
+				    Renamed
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,17 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DataFolder","GetFile","SA2","Councils","Years","Applications"]
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table SA2
+ref table Councils
+ref table Years
+ref table Applications
+
+ref cultureInfo en-US

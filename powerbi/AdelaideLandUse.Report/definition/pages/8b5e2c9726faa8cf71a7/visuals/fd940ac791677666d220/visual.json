@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "fd940ac791677666d220",
+  "position": {
+    "x": 40,
+    "y": 18,
+    "z": 0,
+    "height": 91,
+    "width": 1840,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "PADDOCKS AND BIG BLOCKS INTO HOUSING",
+                    "textStyle": {
+                      "fontSize": "24pt",
+                      "color": "#163c6e",
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Approved residential allotments lodged 1 July 2018 to 30 June 2025, by SA2: greenfield (farm, vacant or rural land in 2018).",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#5b6573",
+                      "fontFamily": "Segoe UI"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

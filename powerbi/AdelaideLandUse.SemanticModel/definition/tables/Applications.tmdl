@@ -1,0 +1,52 @@
+table Applications
+	lineageTag: 1ddf333c-6654-f7f8-9c73-9dddfb4cc429
+
+	measure 'Applications count' = COUNTROWS ( Applications )
+		formatString: #,0
+		lineageTag: f574d3dd-6084-4e39-96c5-77a6a3461a4a
+
+	column edalaid
+		dataType: string
+		lineageTag: 84205837-4721-9c5d-6bec-88321c4efcd9
+		summarizeBy: none
+		sourceColumn: edalaid
+
+		annotation SummarizationSetBy = Automatic
+
+	column lots
+		dataType: int64
+		formatString: #,0
+		lineageTag: 9aa78ac4-9683-4990-1de4-b7466bf87d76
+		summarizeBy: none
+		sourceColumn: lots
+
+		annotation SummarizationSetBy = Automatic
+
+	column kind
+		dataType: string
+		lineageTag: f868413d-6c63-3d2a-b642-d0ccef9552a9
+		summarizeBy: none
+		sourceColumn: kind
+
+		annotation SummarizationSetBy = Automatic
+
+	column size_band
+		dataType: string
+		lineageTag: 7aa204c1-a631-c920-7f0c-ae7e7396cb3b
+		summarizeBy: none
+		sourceColumn: size_band
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Applications = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(GetFile("tables/applications.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Promoted, {"edalaid", "lots", "kind", "size_band"}),
+				    Typed = Table.TransformColumnTypes(Kept, {{"edalaid", type text}, {"lots", Int64.Type}, {"kind", type text}, {"size_band", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

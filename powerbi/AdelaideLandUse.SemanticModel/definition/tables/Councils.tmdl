@@ -1,0 +1,86 @@
+table Councils
+	lineageTag: 214be0a4-8caa-6d7f-18a4-8b9adcb90c1f
+
+	measure 'Council greenfield' = SUM ( Councils[greenfield] )
+		formatString: #,0
+		lineageTag: 802d7342-a923-01c5-013a-dc16848d0349
+
+	measure 'Council infill' = SUM ( Councils[infill] )
+		formatString: #,0
+		lineageTag: 5d41478b-6894-b73d-3353-a445b31c9aa1
+
+	column lga_code
+		dataType: string
+		lineageTag: 790d9e01-b98f-8948-0356-21268d35fa1a
+		summarizeBy: none
+		sourceColumn: lga_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column lga_name
+		dataType: string
+		lineageTag: 61bac0b3-8cde-7ec9-9d08-103c8575ad58
+		summarizeBy: none
+		sourceColumn: lga_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column greenfield
+		dataType: double
+		formatString: #,0
+		lineageTag: baf8109c-8e61-f4be-e465-34e016513ee5
+		summarizeBy: none
+		sourceColumn: greenfield
+
+		annotation SummarizationSetBy = Automatic
+
+	column infill
+		dataType: double
+		formatString: #,0
+		lineageTag: b466cad8-fd8f-ad4a-30cf-a744994acb8f
+		summarizeBy: none
+		sourceColumn: infill
+
+		annotation SummarizationSetBy = Automatic
+
+	column all_lots
+		dataType: double
+		formatString: #,0
+		lineageTag: 3bce0dc8-debd-0add-420a-1629d48fa52c
+		summarizeBy: none
+		sourceColumn: all_lots
+
+		annotation SummarizationSetBy = Automatic
+
+	column greenfield_ha
+		dataType: double
+		formatString: #,0.0
+		lineageTag: cd87aca5-ec11-5d97-c38e-622a186dab50
+		summarizeBy: none
+		sourceColumn: greenfield_ha
+
+		annotation SummarizationSetBy = Automatic
+
+	column lga_name_short
+		dataType: string
+		lineageTag: 1503b786-f0b8-da60-896f-0a9fdc053a4e
+		summarizeBy: none
+		sourceColumn: lga_name_short
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Councils = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(GetFile("tables/by_council.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Promoted, {"lga_code", "lga_name", "Greenfield", "Infill", "all_lots", "greenfield_ha"}),
+				    Typed = Table.TransformColumnTypes(Kept, {{"lga_code", type text}, {"lga_name", type text}, {"Greenfield", type number}, {"Infill", type number}, {"all_lots", type number}, {"greenfield_ha", type number}}, "en-US")
+				    Renamed = Table.RenameColumns(Typed, {{"Greenfield", "greenfield"}, {"Infill", "infill"}, {"Vacant residential land", "vacant_urban"}, {"Brownfield and other", "brownfield"}, {"Not in the 2018 layer", "no_parcel"}}),
+				    ShortNames_lga_name_short = [#"Norwood Payneham and St Peters" = "Norwood Payneham…"],
+				    Short_lga_name_short = Table.AddColumn(Renamed, "lga_name_short", each Record.FieldOrDefault(ShortNames_lga_name_short, [lga_name], [lga_name]), type text)
+				in
+				    Short_lga_name_short
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,123 @@
+table SA2
+	lineageTag: 098bc0ff-5209-6e26-0be0-66740679b40c
+
+	/// Approved residential allotments lodged 1 July 2018 to 30 June 2025
+	measure Allotments = SUM ( SA2[all_lots] )
+		formatString: #,0
+		lineageTag: fde1463b-1b2a-8299-b88b-12eb56c0c6a2
+
+	/// On land that was farmland, vacant land or rural living in 2018
+	measure 'Greenfield allotments' = SUM ( SA2[greenfield] )
+		formatString: #,0
+		lineageTag: 0326a674-2807-57d5-a94a-05548e2e9bbb
+
+	/// On land already residential in 2018
+	measure 'Infill allotments' = SUM ( SA2[infill] )
+		formatString: #,0
+		lineageTag: 3d5f8d54-40d2-4874-525a-3dfe1a2f52ba
+
+	measure 'Greenfield share' = DIVIDE ( [Greenfield allotments], [Allotments] )
+		formatString: 0%
+		lineageTag: 6a010849-567c-b9a7-46b3-2fd396e08176
+
+	measure 'Infill share' = DIVIDE ( [Infill allotments], [Allotments] )
+		formatString: 0%
+		lineageTag: 24348b74-2619-5abc-1222-2d37a3aeb152
+
+	/// Farm, vacant or rural-living land in 2018 that is residential in 2025, with a residential land division over it
+	measure 'Greenfield hectares' = SUM ( SA2[greenfield_ha] )
+		formatString: #,0
+		lineageTag: 1c02ce92-fda4-b1b3-3a32-3c57c5165663
+
+	column sa2_code
+		dataType: string
+		lineageTag: 14e4c328-9429-7f0c-5768-964dbf74b9a6
+		summarizeBy: none
+		sourceColumn: sa2_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column sa2_name
+		dataType: string
+		lineageTag: 28dd43a2-c4be-a2d9-a1ef-d41b5a7a93ec
+		summarizeBy: none
+		sourceColumn: sa2_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column greenfield
+		dataType: double
+		formatString: #,0
+		lineageTag: 33ececc6-f754-5439-62a4-7b1d67a9ae05
+		summarizeBy: none
+		sourceColumn: greenfield
+
+		annotation SummarizationSetBy = Automatic
+
+	column infill
+		dataType: double
+		formatString: #,0
+		lineageTag: db13ed05-2ff5-cce2-ac65-7012a231dd10
+		summarizeBy: none
+		sourceColumn: infill
+
+		annotation SummarizationSetBy = Automatic
+
+	column vacant_urban
+		dataType: double
+		formatString: #,0
+		lineageTag: 66f3a80e-18bf-7f98-2ecd-0f9e48fac7eb
+		summarizeBy: none
+		sourceColumn: vacant_urban
+
+		annotation SummarizationSetBy = Automatic
+
+	column brownfield
+		dataType: double
+		formatString: #,0
+		lineageTag: 12a85dd2-0cff-b526-8576-fe631bac20b7
+		summarizeBy: none
+		sourceColumn: brownfield
+
+		annotation SummarizationSetBy = Automatic
+
+	column all_lots
+		dataType: double
+		formatString: #,0
+		lineageTag: 3e3c9458-457e-9daa-2f23-40986659af19
+		summarizeBy: none
+		sourceColumn: all_lots
+
+		annotation SummarizationSetBy = Automatic
+
+	column greenfield_ha
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 575c5731-d5e6-aaa4-4c71-80ff381ef42f
+		summarizeBy: none
+		sourceColumn: greenfield_ha
+
+		annotation SummarizationSetBy = Automatic
+
+	column recoded_ha
+		dataType: double
+		formatString: #,0.0
+		lineageTag: e1a8b0b8-f171-72c7-cb45-97c564905b6c
+		summarizeBy: none
+		sourceColumn: recoded_ha
+
+		annotation SummarizationSetBy = Automatic
+
+	partition SA2 = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(GetFile("tables/by_sa2.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Promoted, {"sa2_code", "sa2_name", "Greenfield", "Infill", "Vacant residential land", "Brownfield and other", "all_lots", "greenfield_ha", "recoded_ha"}),
+				    Typed = Table.TransformColumnTypes(Kept, {{"sa2_code", type text}, {"sa2_name", type text}, {"Greenfield", type number}, {"Infill", type number}, {"Vacant residential land", type number}, {"Brownfield and other", type number}, {"all_lots", type number}, {"greenfield_ha", type number}, {"recoded_ha", type number}}, "en-US")
+				    Renamed = Table.RenameColumns(Typed, {{"Greenfield", "greenfield"}, {"Infill", "infill"}, {"Vacant residential land", "vacant_urban"}, {"Brownfield and other", "brownfield"}, {"Not in the 2018 layer", "no_parcel"}})
+				in
+				    Renamed
+
+	annotation PBI_ResultType = Table
